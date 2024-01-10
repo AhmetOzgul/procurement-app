@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "307522958828",
+    "project_id": "odev-feee8",
+    "storage_bucket": "odev-feee8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:307522958828:android:c4c6bfe927b92735e33cc9",
+        "android_client_info": {
+          "package_name": "com.example.proje"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2jbA62hvbW_JK7K2muFpIQp8pY5G4_q0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
