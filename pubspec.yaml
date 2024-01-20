@@ -38,6 +38,13 @@ dependencies:
   curved_navigation_bar: ^1.0.3
   easy_search_bar: ^2.5.0
   get:
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  font_awesome_flutter: ^10.6.0
+  cloud_firestore: ^4.14.0
+  image_picker: ^1.0.7
+  firebase_storage: ^11.6.0
+  firebase_messaging: ^14.7.10
 
 dev_dependencies:
   flutter_test:

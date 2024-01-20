@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/product_list_item.dart';
+import 'package:proje/widgets/product_list_item.dart';
+import 'package:proje/widgets/text_field.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -10,95 +11,64 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  String? searchKey;
+  Stream? streamQuery;
+  final searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      const SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 80,
-            ),
-            ProductListItem(
-                showCartButton: true,
-                productName: "ASDAsd",
-                productDescription: "productDescription",
-                productImage:
-                    "https://www.bluemint.com/content/images/thumbs/026/0267753_atil_1200.jpeg"),
-            ProductListItem(
-                showCartButton: true,
-                productName: "ASDAsd",
-                productDescription: "productDescription",
-                productImage:
-                    "https://www.bluemint.com/content/images/thumbs/026/0267753_atil_1200.jpeg"),
-            ProductListItem(
-                showCartButton: true,
-                productName: "ASDAsd",
-                productDescription: "productDescription",
-                productImage:
-                    "https://www.bluemint.com/content/images/thumbs/026/0267753_atil_1200.jpeg"),
-            ProductListItem(
-                showCartButton: true,
-                productName: "ASDAsd",
-                productDescription: "productDescription",
-                productImage:
-                    "https://www.bluemint.com/content/images/thumbs/026/0267753_atil_1200.jpeg"),
-            ProductListItem(
-                showCartButton: true,
-                productName: "ASDAsd",
-                productDescription: "productDescription",
-                productImage:
-                    "https://www.bluemint.com/content/images/thumbs/026/0267753_atil_1200.jpeg"),
-            ProductListItem(
-                showCartButton: true,
-                productName: "ASDAsd",
-                productDescription: "productDescription",
-                productImage:
-                    "https://www.bluemint.com/content/images/thumbs/026/0267753_atil_1200.jpeg"),
-          ],
-        ),
+      Padding(
+        padding: const EdgeInsets.only(top: 80),
+        child: StreamBuilder(
+            stream: streamQuery,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                    child: Text('Some error occurred ${snapshot.error}'));
+              }
+              if (snapshot.hasData) {
+                QuerySnapshot querySnapshot = snapshot.data;
+                List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+                List<Map> items = documents
+                    .map((e) => {
+                          'id': e.id,
+                          'image': e['image'],
+                          'name': e['name'],
+                          'quantity': e['quantity'],
+                        })
+                    .toList();
+                return ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      Map thisItem = items[index];
+                      return ProductListItem(
+                          showCartButton: true,
+                          productName: thisItem['name'],
+                          numberOfProduct: thisItem['quantity'],
+                          productImage: thisItem['image']);
+                    });
+              } else {
+                return Container();
+              }
+            }),
       ),
       Padding(
-        padding: EdgeInsets.fromLTRB(15, 15, 15, 40),
-        child: SearchAnchor(
-            builder: (BuildContext context, SearchController controller) {
-          return SearchBar(
-            shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20))),
-            side: const MaterialStatePropertyAll(
-                BorderSide(color: Color(0xff176B87), width: 1)),
-            backgroundColor: const MaterialStatePropertyAll(Color(0xffB4D4FF)),
-            controller: controller,
-            padding: const MaterialStatePropertyAll<EdgeInsets>(
-                EdgeInsets.symmetric(horizontal: 16.0)),
-            onTap: () {
-              controller.openView();
-            },
-            onChanged: (_) {
-              controller.openView();
-            },
-            trailing: const [
-              Icon(
-                Icons.search,
-                size: 40,
-                color: Colors.white,
-              )
-            ],
-          );
-        }, suggestionsBuilder:
-                (BuildContext context, SearchController controller) {
-          return List<ListTile>.generate(5, (int index) {
-            final String item = 'item $index';
-            return ListTile(
-              title: Text(item),
-              onTap: () {
-                setState(() {
-                  controller.closeView(item);
-                });
-              },
-            );
-          });
-        }),
+        padding: const EdgeInsets.fromLTRB(15, 15, 15, 40),
+        child: MyTextField(
+          onChanged: (value) {
+            setState(() {
+              searchKey = value;
+              streamQuery = FirebaseFirestore.instance
+                  .collection('shared_product')
+                  .where('name', isGreaterThanOrEqualTo: searchKey)
+                  .snapshots();
+            });
+          },
+          controller: searchController,
+          isNumber: false,
+          obscureText: false,
+          hintText: "Search Products",
+        ),
       ),
     ]);
   }

@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:proje/pages/profile_page.dart';
 
-class MyAppBar extends StatelessWidget {
+class MyAppBar extends StatefulWidget {
   const MyAppBar({Key? key}) : super(key: key);
 
+  @override
+  State<MyAppBar> createState() => _MyAppBarState();
+}
+
+class _MyAppBarState extends State<MyAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: 80,
       backgroundColor: const Color(0xff176B87),
-      leading: const Padding(
-        padding: EdgeInsets.only(left: 15),
-        child: Icon(
-          Icons.accessibility_new_outlined,
-          size: 50,
-        ),
-      ),
       actions: [
         ElevatedButton(
           onPressed: () {
@@ -25,7 +23,6 @@ class MyAppBar extends StatelessWidget {
                 builder: (context) => const ProfilePage(
                   nameSurname: "Ahmet Özgül",
                   phoneNum: "553 059 3560",
-                  email: "ahmetozgul.ao@gmail.com",
                 ),
               ),
             );

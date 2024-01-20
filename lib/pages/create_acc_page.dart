@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:proje/widgets/button.dart';
 import 'package:proje/widgets/text_field.dart';
@@ -15,6 +16,37 @@ class _CreateAccPageState extends State<CreateAccPage> {
   final emailTextController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final passwordTextController = TextEditingController();
+  void signUp() async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailTextController.text,
+        password: passwordTextController.text,
+      );
+      if (context.mounted) Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      displayMessage(e.code);
+      await Future.delayed(const Duration(seconds: 1));
+      Navigator.pop(context);
+    }
+  }
+
+  void displayMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(message),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -26,11 +58,11 @@ class _CreateAccPageState extends State<CreateAccPage> {
               const SizedBox(
                 height: 70,
               ),
-              //logo
-              const FlutterLogo(
+              const Icon(
+                Icons.shopping_cart,
                 size: 100,
+                color: Color(0xff176B87),
               ),
-
               const Padding(
                 padding: EdgeInsets.only(top: 50),
                 child: Text(
@@ -78,7 +110,7 @@ class _CreateAccPageState extends State<CreateAccPage> {
                   isNumber: false,
                 ),
               ),
-              MyButton(onTap: () {}, text: "Sign Up"),
+              MyButton(onTap: signUp, text: "Sign Up"),
               Padding(
                 padding: const EdgeInsets.only(top: 15),
                 child: Row(

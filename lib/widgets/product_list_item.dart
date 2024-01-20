@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class ProductListItem extends StatefulWidget {
   final String productName;
-  final String productDescription;
+  final String numberOfProduct;
   final String productImage;
   final bool showCartButton;
   const ProductListItem(
       {Key? key,
       required this.productName,
-      required this.productDescription,
+      required this.numberOfProduct,
       required this.productImage,
       this.showCartButton = false})
       : super(key: key);
@@ -21,24 +21,24 @@ class _ProductListItemState extends State<ProductListItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Card(
-        color: Color(0xffB4D4FF),
+        color: const Color(0xffB4D4FF),
         child: Row(
           children: [
             Expanded(
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
-                child: Image.asset(
-                  "lib/asd.jpeg",
+                child: Image.network(
+                  widget.productImage,
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            SizedBox(width: 16.0),
+            const SizedBox(width: 16.0),
             Expanded(
               flex: 4,
               child: Column(
@@ -46,15 +46,15 @@ class _ProductListItemState extends State<ProductListItem> {
                 children: [
                   Text(
                     widget.productName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   Text(
-                    widget.productDescription,
-                    style: TextStyle(fontSize: 16.0),
+                    "${widget.numberOfProduct} Piece(s)",
+                    style: const TextStyle(fontSize: 17.0),
                   ),
                 ],
               ),
@@ -64,18 +64,18 @@ class _ProductListItemState extends State<ProductListItem> {
               child: widget.showCartButton
                   ? TextButton(
                       onPressed: () {},
-                      child: Icon(
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all<CircleBorder>(
+                            const CircleBorder()),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            const Color(0xff176B87)),
+                      ),
+                      child: const Icon(
                         Icons.shopping_cart,
                         color: Colors.white,
                       ),
-                      style: ButtonStyle(
-                        shape: MaterialStateProperty.all<CircleBorder>(
-                            CircleBorder()),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Color(0xff176B87)),
-                      ),
                     )
-                  : SizedBox(), // Alternatively, you can use an empty SizedBox() or Container() here
+                  : const SizedBox(),
             ),
           ],
         ),
