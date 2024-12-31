@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:proje/services/firebase_service.dart';
 
 import '../widgets/product_list_item.dart';
 
@@ -17,15 +17,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final FirebaseService _firebaseService = FirebaseService();
+
   @override
   Widget build(BuildContext context) {
-    final currentUser = FirebaseAuth.instance.currentUser!;
+    final currentUser = _firebaseService.getCurrentUser();
     TextStyle _textStyle =
         const TextStyle(fontSize: 18, color: Color(0xff176B87));
-    final streamQuery = FirebaseFirestore.instance
-        .collection('shared_product')
-        .where('userEmail', isEqualTo: currentUser.email)
-        .snapshots();
+    final streamQuery = _firebaseService.getUserProducts(currentUser.email!);
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -36,7 +35,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   Container(
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        // borderRadius: BorderRadius.circular(360),
                         color: Color(0xff176B87),
                       ),
                       height: 200,
@@ -89,7 +87,6 @@ class _ProfilePageState extends State<ProfilePage> {
               child: StreamBuilder(
                   stream: streamQuery,
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    //veritabanından ürün verilerini çekme
                     if (snapshot.hasError) {
                       return Center(
                           child: Text('Some error occurred ${snapshot.error}'));

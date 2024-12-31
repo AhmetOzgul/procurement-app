@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:proje/services/firebase_service.dart';
 import 'package:proje/widgets/text_field.dart';
 
 class PostPage extends StatefulWidget {
@@ -15,13 +14,13 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPageState extends State<PostPage> {
+  final FirebaseService _firebaseService = FirebaseService();
   final currentUser = FirebaseAuth.instance.currentUser!;
   final productNameController = TextEditingController();
   final productStockController = TextEditingController();
   final productDescriptionController = TextEditingController();
   String imageUrl = "";
-  final CollectionReference _reference =
-      FirebaseFirestore.instance.collection('shared_product');
+
   void displayMessage(String message) {
     showDialog(
       context: context,
@@ -43,24 +42,18 @@ class _PostPageState extends State<PostPage> {
                 backgroundColor: MaterialStatePropertyAll(Color(0xff176B87)),
                 minimumSize: MaterialStatePropertyAll(Size(120, 120))),
             onPressed: () async {
-              //Kullanıcıdan fotoğraf alma
               ImagePicker imagePicker = ImagePicker();
               XFile? file = await imagePicker.pickImage(
                   source: ImageSource.camera, maxHeight: 720, maxWidth: 720);
 
               if (file == null) return;
 
-              //Fotoğrafı veri tabanına upload etme
               String uniqueFileName =
                   "${currentUser.uid}_${DateTime.now().millisecondsSinceEpoch.toString()}";
 
-              Reference referenceRoot = FirebaseStorage.instance.ref();
-              Reference referenceDirImages = referenceRoot.child('images');
-              Reference referenceImageToUpload =
-                  referenceDirImages.child(uniqueFileName);
               try {
-                await referenceImageToUpload.putFile(File(file.path));
-                imageUrl = await referenceImageToUpload.getDownloadURL();
+                imageUrl = await _firebaseService.uploadImage(
+                    File(file.path), uniqueFileName);
               } catch (error) {
                 Navigator.pop(context);
                 displayMessage(error.toString());
@@ -138,7 +131,7 @@ class _PostPageState extends State<PostPage> {
                 'date': dateTime,
                 'userEmail': userEmail
               };
-              _reference.add(dataToSend);
+              _firebaseService.addProduct(dataToSend);
             },
             style: const ButtonStyle(
               backgroundColor: MaterialStatePropertyAll(Color(0xff176B87)),

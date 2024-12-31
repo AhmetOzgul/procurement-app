@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:proje/services/firebase_service.dart';
 import 'package:proje/widgets/product_list_item.dart';
 import 'package:proje/widgets/text_field.dart';
 
@@ -14,6 +15,8 @@ class _SearchPageState extends State<SearchPage> {
   String? searchKey;
   Stream? streamQuery;
   final searchController = TextEditingController();
+  final FirebaseService _firebaseService = FirebaseService();
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -58,10 +61,7 @@ class _SearchPageState extends State<SearchPage> {
           onChanged: (value) {
             setState(() {
               searchKey = value;
-              streamQuery = FirebaseFirestore.instance
-                  .collection('shared_product')
-                  .where('name', isGreaterThanOrEqualTo: searchKey)
-                  .snapshots();
+              streamQuery = _firebaseService.searchProducts(searchKey!);
             });
           },
           controller: searchController,
